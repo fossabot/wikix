@@ -3,4 +3,4 @@
 *.pyc
 *.pyo
 
-test_wiki/
+base_wiki/output/

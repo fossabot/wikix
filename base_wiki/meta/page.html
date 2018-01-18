@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ name }}{% endblock %}
+{% block content %}
+
+<div class="page-title">
+    <h1>{{ name }}</h1>
+</div>
+
+<div class="page-content">
+    {{ body }}
+</div>
+
+{% if categories|length %}
+<div class="page-categories">
+    <p>Categories: {%- for category in categories %}
+      <a href="/c/{{ category }}">{{ category }}</a>
+      {% endfor %}</p>
+</div>
+{% endif %}
+
+{% endblock %}

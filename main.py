@@ -48,7 +48,7 @@ def main():
     parser.add_argument("--no-progress-bar", action="store_true")
 
     build = parser.add_argument_group(title="build")
-    build.add_argument("--index-page", default="index")
+    build.add_argument("--index-page", default="Welcome")
     build.add_argument("--page-dir", "-p", default="pages")
     build.add_argument("--static-dir", "-s", default="static")
     build.add_argument("--meta-dir", "-m", default="meta")

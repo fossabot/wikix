@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}All Pages{% endblock %}
+{% block content %}
+
+<div class="page-title">
+    <h1>All Pages</h1>
+</div>
+
+<div class="page-content">
+    <ul>
+        {% for page in pages %}
+        <li><a href="/p/{{ page }}">{{ page }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

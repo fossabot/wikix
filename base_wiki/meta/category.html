@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ name }}{% endblock %}
+{% block content %}
+
+<div class="category-title">
+    <h1>{{ name }}</h1>
+</div>
+
+<div class="category-pages">
+    <ul>
+        {% for page in pages %}
+        <li><a href="/p/{{ page }}">{{ page }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
