@@ -1,0 +1,6 @@
+.vscode/
+
+*.pyc
+*.pyo
+
+test_wiki/
