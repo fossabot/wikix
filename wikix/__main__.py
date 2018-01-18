@@ -65,6 +65,8 @@ def main():
         os.chdir(args.working_directory)
 
     if args.server:
+        os.chdir(args.output_dir)
+
         Handler = http.server.SimpleHTTPRequestHandler
         httpd = http.server.HTTPServer((args.address, args.port), Handler)
         try:

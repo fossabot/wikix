@@ -7,4 +7,4 @@ build:
 
 .PHONY: serve
 serve:
-	pipenv run -- python -m wikix -w base_wiki/output --server
+	pipenv run -- python -m wikix -w base_wiki --server
