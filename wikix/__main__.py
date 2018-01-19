@@ -44,7 +44,7 @@ def load_func(args, macro_default):
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--working-directory", "-w")
+    parser.add_argument("path")
     parser.add_argument("--no-progress-bar", action="store_true")
 
     build = parser.add_argument_group(title="build")
@@ -61,8 +61,7 @@ def main():
 
     args = parser.parse_args()
 
-    if args.working_directory is not None:
-        os.chdir(args.working_directory)
+    os.chdir(args.path)
 
     if args.server:
         os.chdir(args.output_dir)
