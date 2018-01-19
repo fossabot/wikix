@@ -6,6 +6,7 @@ import argparse
 import http.server
 from os import path
 from collections import defaultdict
+from urllib.parse import quote as urlquote
 
 import jinja2
 import markdown
@@ -120,8 +121,8 @@ def main():
         with open(path.join(p, "index.html"), "w") as f:
             f.write(template.render(**kwargs))
 
-    def render_page(name, body, cats):
-        output_path = get_output_path("p", name)
+    def render_page(name, page, body, cats):
+        output_path = get_output_path("p", page)
         kwargs = {
             "name": name,
             "body": body,
@@ -162,7 +163,10 @@ def main():
             for cat in cats:
                 all_cats[cat].add(page)
 
-            render_page(page, page_body, cats)
+            name = page
+            page = page.replace(" ", "_")
+            page = urlquote(page)
+            render_page(name, page, page_body, cats)
 
     # /p/index.html
     write_template(get_output_path("p"), page_index_template, pages=sorted(all_pages))
