@@ -6,12 +6,10 @@ import argparse
 import http.server
 from os import path
 from collections import defaultdict
-from urllib.parse import quote as urlquote
 
 import jinja2
 import markdown
 from tqdm import tqdm
-
 
 CAT_RE = re.compile(r"<category>(.+)</category>")
 
@@ -40,6 +38,14 @@ def load_func(args, macro_default):
             return s, p, lambda: False
         return None
     return inner
+
+
+def do_url_quote(s):
+    return s.replace(" ", "_")
+
+
+def build_url(label, base, end):
+    return base + do_url_quote(label) + end
 
 
 def main():
@@ -97,6 +103,7 @@ def main():
             "markdown.extensions.wikilinks"],
         extension_configs={
             "markdown.extensions.wikilinks": {
+                "build_url": build_url,
                 "base_url": "/p/"}},
         output_format="html5")
 
@@ -164,8 +171,7 @@ def main():
                 all_cats[cat].add(page)
 
             name = page
-            page = page.replace(" ", "_")
-            page = urlquote(page)
+            page = do_url_quote(page)
             render_page(name, page, page_body, cats)
 
     # /p/index.html
