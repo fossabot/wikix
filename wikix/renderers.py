@@ -88,8 +88,6 @@ class JinjaRenderer:
     def page(self, name):
         # GET /p/{name}
         raw_content, content, tags = self._content_renderer(name)
-        if raw_content is None:
-            return None
 
         t = self._env.get_template("page.html")
         return t.render(

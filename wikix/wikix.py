@@ -72,8 +72,6 @@ class WikiX:
 
         name = urlunquote(name)
         data = self._renderer.page(name)
-        if not data:
-            raise web.HTTPNotFound()
 
         return web.Response(body=data, content_type="text/html")
 
