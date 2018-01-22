@@ -2,6 +2,7 @@ from asyncio import coroutine
 from urllib.parse import unquote as urlunquote
 
 from aiohttp import web
+from jinja2.exceptions import TemplateSyntaxError
 
 from .storages import FolderStorage
 from .renderers import JinjaRenderer, JinjaMarkdownContentRenderer
@@ -14,7 +15,8 @@ class WikiX:
         self._index_page = index_page
         self._static_path = static_path
 
-        self._app = web.Application()
+        self._app = web.Application(
+            middlewares=[self.error_middleware])
         self._add_routes()
 
     def _add_routes(self):
@@ -22,6 +24,7 @@ class WikiX:
 
         self._app.router.add_get("/p", self.get_page_all)
         self._app.router.add_get("/p/{name}", self.get_page)
+        self._app.router.add_post("/p/{name}", self.post_page)
 
         self._app.router.add_get("/t", self.get_tag_all)
         self._app.router.add_get("/t/{tag}", self.get_tag)
@@ -30,7 +33,24 @@ class WikiX:
         if self._static_path is None:
             self._app.router.add_get("/s/{static}", self.get_static)
         else:
+            # it should be noted that this allows subdirectories in static
+            # while the one above doesn't
+            # the one above is _more correct_, but this works better usually
+            # once we support more storages than just FolderStorage,
+            # this must be refactored
             self._app.router.add_static("/s", self._static_path)
+
+    @web.middleware
+    @coroutine
+    def error_middleware(self, request, handler):
+        try:
+            res = yield from handler(request)
+            return res
+        # TODO make exception catching generic, so that different renderers
+        # raise same errors that can be just catched here
+        except TemplateSyntaxError as ex:
+            msg = "{ex.message} in '{ex.name}':{ex.lineno} (filename='{ex.filename}')".format(ex=ex)
+            return web.Response(status=500, text=msg)
 
     @coroutine
     def get_index(self, req):
@@ -56,6 +76,22 @@ class WikiX:
             raise web.HTTPNotFound()
 
         return web.Response(body=data, content_type="text/html")
+
+    @coroutine
+    def post_page(self, req):
+        name = req.match_info.get("name", None)
+        if name is None:
+            raise web.HTTPNotFound()
+
+        name = urlunquote(name)
+        data = yield from req.post()
+        data = data.get("raw_content", None)
+        if data is None:
+            raise web.HTTPBadRequest("no raw_content in data")
+        data = "\n".join(data.splitlines())
+        self._renderer.page_save(name, data)
+        return web.HTTPSeeOther("/p/" + name)
+
 
     @coroutine
     def get_tag_all(self, req):

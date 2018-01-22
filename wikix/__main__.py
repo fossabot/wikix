@@ -31,8 +31,8 @@ def main():
         FolderStorage(pages_path, ".md"),
         FolderStorage(static_path),
         templates_path,
-        lambda x: JinjaMarkdownContentRenderer(
-            x, "__default", ".md"))
+        lambda page_storage: JinjaMarkdownContentRenderer(
+            page_storage, "__default"))
     WikiX(r, args.index_page, static_path).run(args.host, args.port)
 
 

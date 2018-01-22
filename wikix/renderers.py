@@ -18,10 +18,9 @@ def parse_tags(s):
 
 
 class JinjaMarkdownContentRenderer:
-    def __init__(self, storage, macro_default_page, ext):
+    def __init__(self, storage, macro_default_page):
         self._storage = storage
 
-        self._ext = ext
         self._macro_default_page = macro_default_page
         self._macro_import = '{{% import "{}" as m %}}\n'.format(macro_default_page)
 
@@ -50,13 +49,13 @@ class JinjaMarkdownContentRenderer:
                 return None
 
             macro_import = self._macro_import
-            if not self._storage.exists(self._macro_default_page + self._ext):
+            if not self._storage.exists(self._macro_default_page):
                 macro_import = "\n"
             is_default = name == self._macro_default_page
 
             out = "" if is_default else macro_import
 
-            s = self._storage.content(name + self._ext)
+            s = self._storage.content(name)
             if s is None:
                 return None
             return out + s
@@ -66,12 +65,12 @@ class JinjaMarkdownContentRenderer:
         return base + urlquote(label) + end
 
     def __call__(self, name):
-        if not self._storage.exists(name + self._ext):
+        if not self._storage.exists(name):
             return None, None, None
 
         content = self._env.get_template(name).render()
         content, tags = parse_tags(content)
-        raw_content = self._storage.content(name + self._ext)
+        raw_content = self._storage.content(name)
         return raw_content, self._md.convert(content), tags
 
 
@@ -98,6 +97,9 @@ class JinjaRenderer:
             content=content,
             raw_content=raw_content,
             tags=tags)
+
+    def page_save(self, name, raw_content):
+        self._page_storage.edit(name, raw_content)
 
     def each_page(self):
         for page in self._page_storage.each():

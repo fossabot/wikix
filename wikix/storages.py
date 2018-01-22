@@ -8,7 +8,7 @@ class FolderStorage:
         self._ext = ext
 
     def _to_path(self, name):
-        return os.path.join(self._path, name)
+        return os.path.join(self._path, name) + ("" if self._ext is None else self._ext)
 
     def exists(self, name):
         return os.path.isfile(self._to_path(name))
@@ -27,23 +27,31 @@ class FolderStorage:
 
     def each(self):
         for i in os.listdir(self._path):
+            # check that i is a file (needs full path)
             i = os.path.join(self._path, i)
             if not os.path.isfile(i):
                 continue
+
+            # use only the files name
             i = os.path.split(i)[1]
+
             if self._ext is None:
                 yield i
             else:
+                # if this storage has an extension, only return those that have the
+                # correct extension
                 i = os.path.splitext(i)
                 if i[1] != self._ext:
                     continue
+
+                # return file name without extension
                 yield i[0]
 
     def move(self, old_name, new_name):
         old_path = self._to_path(old_name)
         new_path = self._to_path(new_name)
         if os.path.isfile(new_path):
-            return "{} already exists".format(new_name)
+            return "'{}' already exists".format(new_name)
         try:
             os.rename(old_path, new_path)
         except OSError:
