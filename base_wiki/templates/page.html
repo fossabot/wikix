@@ -7,13 +7,13 @@
 </div>
 
 <div class="page-content">
-    {{ body }}
+    {{ content }}
 </div>
 
-{% if categories|length %}
+{% if tags|length %}
 <div class="page-categories">
-    <p>Categories: {%- for category in categories %}
-      <a href="/c/{{ category }}">{{ category }}</a>
+    <p>Tags: {%- for tag in tags %}
+      <a href="/t/{{ tag }}">{{ tag }}</a>
       {% endfor %}</p>
 </div>
 {% endif %}

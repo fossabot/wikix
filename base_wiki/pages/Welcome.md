@@ -1,5 +1,7 @@
 Hello World!
 
+A weird-ish link [[Äbbä Bööb]].
+
 [TOC]
 
 ## this

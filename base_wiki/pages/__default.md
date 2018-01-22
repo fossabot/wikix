@@ -1,6 +1,6 @@
 {%- macro categories() %}
 {%- for c in varargs %}
-    <category>{{ c }}</category>
+    <tag>{{ c }}</tag>
 {% endfor %}
 {% endmacro %}
 

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}All static files{% endblock %}
+{% block content %}
+
+<div class="page-title">
+    <h1>All static files</h1>
+</div>
+
+<div class="page-content">
+    <ul>
+        {% for static in statics %}
+        <li><a href="/s/{{ static }}">{{ static }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
