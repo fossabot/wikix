@@ -1,5 +1,4 @@
 from asyncio import coroutine
-from urllib.parse import unquote as urlunquote
 
 from aiohttp import web
 from jinja2.exceptions import TemplateSyntaxError
@@ -22,7 +21,8 @@ class WikiX:
         self._add_routes()
 
     def _add_routes(self):
-        self._app.router.add_get("/", self.get_index)
+        self._app.router.add_get("/", self.get_page)
+        self._app.router.add_post("/", self.post_page)
 
         self._app.router.add_get("/p", self.get_page_all)
         self._app.router.add_get("/p/{name}", self.get_page)
@@ -68,13 +68,6 @@ class WikiX:
         res = yield from handler(request)
         return res
 
-
-    @coroutine
-    def get_index(self, req):
-        return web.Response(
-            body=self._renderer.page(self._index_page),
-            content_type="text/html")
-
     @coroutine
     def get_page_all(self, req):
         return web.Response(
@@ -85,9 +78,10 @@ class WikiX:
     def get_page(self, req):
         name = req.match_info.get("name", None)
         if name is None:
-            raise web.HTTPNotFound()
+            return web.Response(
+                body=self._renderer.page(self._index_page),
+                content_type="text/html")
 
-        name = urlunquote(name)
         data = self._renderer.page(name)
 
         return web.Response(body=data, content_type="text/html")
@@ -96,9 +90,8 @@ class WikiX:
     def post_page(self, req):
         name = req.match_info.get("name", None)
         if name is None:
-            raise web.HTTPNotFound()
+            name = self._index_page
 
-        name = urlunquote(name)
         data = yield from req.post()
         data = data.get("raw_content", None)
         if data is None:
@@ -120,7 +113,6 @@ class WikiX:
         if tag is None:
             raise web.HTTPNotFound()
 
-        tag = urlunquote(tag)
         data = self._renderer.tag(tag)
         if not data:
             raise web.HTTPNotFound()
