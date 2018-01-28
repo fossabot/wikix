@@ -57,11 +57,12 @@ class WikiX:
     @web.middleware
     @coroutine
     def remove_trailing_slashes_middleware(self, request, handler):
-        url = request.url
-        if url.path.endswith("/"):
-            path = url.path
+        path = request.url.path
+        if path.endswith("/") and len(path) > 1:
             while path.endswith("/"):
                 path = path[:-1]
+            if len(path) == 0:
+                path = "/"
             return web.HTTPMovedPermanently(path)
 
         res = yield from handler(request)
