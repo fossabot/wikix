@@ -16,7 +16,9 @@ class WikiX:
         self._static_path = static_path
 
         self._app = web.Application(
-            middlewares=[self.error_middleware])
+            middlewares=[
+                self.error_middleware,
+                self.remove_trailing_slashes_middleware])
         self._add_routes()
 
     def _add_routes(self):
@@ -37,7 +39,7 @@ class WikiX:
             # while the one above doesn't
             # the one above is _more correct_, but this works better usually
             # once we support more storages than just FolderStorage,
-            # this must be refactored
+            # this must be refactored (or removed)
             self._app.router.add_static("/s", self._static_path)
 
     @web.middleware
@@ -51,6 +53,20 @@ class WikiX:
         except TemplateSyntaxError as ex:
             msg = "{ex.message} in '{ex.name}':{ex.lineno} (filename='{ex.filename}')".format(ex=ex)
             return web.Response(status=500, text=msg)
+
+    @web.middleware
+    @coroutine
+    def remove_trailing_slashes_middleware(self, request, handler):
+        url = request.url
+        if url.path.endswith("/"):
+            path = url.path
+            while path.endswith("/"):
+                path = path[:-1]
+            return web.HTTPMovedPermanently(path)
+
+        res = yield from handler(request)
+        return res
+
 
     @coroutine
     def get_index(self, req):
