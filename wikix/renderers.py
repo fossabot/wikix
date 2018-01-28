@@ -26,6 +26,7 @@ class JinjaMarkdownContentRenderer:
 
         self._env = jinja2.Environment(
             loader=jinja2.FunctionLoader(self._load_jinja_template()),
+            extensions=["jinja2.ext.loopcontrols"],
             autoescape=False,
             cache_size=0)
         self._md = markdown.Markdown(
@@ -82,6 +83,7 @@ class JinjaRenderer:
         self._content_renderer = content_renderer(self._page_storage)
         self._env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(template_path),  # TODO use a storage
+            extensions=["jinja2.ext.loopcontrols"],
             autoescape=False,
             cache_size=0)
 
