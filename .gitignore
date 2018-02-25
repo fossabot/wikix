@@ -3,4 +3,8 @@
 *.pyc
 *.pyo
 
+dist/
+MANIFEST
+
 base_wiki/output/
+
