@@ -1,1 +1,2 @@
+include Pipfile Pipfile.lock
 recursive-include wikix *.py
